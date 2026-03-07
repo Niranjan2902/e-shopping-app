@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%=title  %></title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Mild Background to match your previous style */
+        body {
+            background-color: #f4f7f6; 
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* The Main Animated Card */
+        .auth-card {
+            border: none;
+            border-radius: 20px;
+            background: #ffffff;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-top: 50px;
+        }
+
+        /* Hover Animation */
+        .auth-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Improved Clear Toggle Switch */
+        .toggle-container {
+            background: #e9ecef;
+            border-radius: 50px;
+            display: flex;
+            padding: 5px;
+            position: relative;
+            width: 280px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .toggle-container .nav-link {
+            flex: 1;
+            z-index: 2;
+            text-align: center;
+            border: none !important;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 10px 0;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-container .nav-link.active {
+            color: #fff !important;
+            background: transparent !important;
+        }
+
+        /* The sliding color indicator */
+        .toggle-indicator {
+            position: absolute;
+            height: calc(100% - 10px);
+            width: calc(50% - 5px);
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border-radius: 50px;
+            top: 5px;
+            left: 5px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Move indicator when Sign Up is active */
+        #pills-signup-tab.active ~ .toggle-indicator {
+            left: calc(50%);
+        }
+
+        /* Form Controls */
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 2px solid #f1f1f1;
+            background: #fdfdfd;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+            background: #fff;
+        }
+
+        .btn-auth {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            margin-top: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+            transition: 0.3s;
+        }
+
+        .btn-auth:hover {
+            transform: scale(1.01);
+            filter: brightness(1.1);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+        }
+        .btn-auth2 {
+            background:#ff7979;
+            color: rgb(99, 1, 1);
+           
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <%- include('../includes/U-layout.ejs') %>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8">
+              <% if(errMessege) {%>
+                <h1 class="text-center medium btn-auth2"><%= errMessege %></h1>
+                <% } %>
+                <div class="card auth-card p-4">
+                    <div class="card-body p-2">
+                        <div class="tab-content" id="pills-tabContent">
+                            <% if(postdata) {%>
+                          
+                                <form action="/reset-password" method="POST">
+                                    <div class="form-group mb-4">
+                                        <label class="small font-weight-bold text-secondary">Email Address</label>
+                                        <input type="email" name="email" class="form-control" placeholder="name@example.com" required>
+                                        <!-- for csfr security token -->
+                                          <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-auth">Reset Password</button>
+                                </form>
+                                <% }else{ %>
+                
+                                <form action="/new-password" method="POST">
+                                    <div class="form-group mb-4">
+                                        <label class="small font-weight-bold text-secondary">Password</label>
+                                        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                                        <!-- for csfr security token -->
+                                          <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+                                          <input type="hidden" name="passwordToken" value="<%=passwordToken %>">
+                                          <input type="hidden" name="userId" value="<%= userId %>">
+                                    </div>
+                                    <button type="submit" class="btn btn-auth">Set New Password</button>
+                                </form>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../includes/B-layout.ejs') %>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+</body>
+</html>

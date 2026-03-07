@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title %>
+  </title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <%- include('../includes/U-layout.ejs') %>
+
+    <main class="py-5">
+      <div class="container">
+        <h1 class="mb-5 text-center">Your Shopping Cart</h1>
+
+        <% if (typeof orders!=='undefined' && orders.length> 0) { %>
+          <% let totalPrice=0 %>
+            <div class="row">
+
+              <% orders.forEach(order=> { %>
+                <div class="col-12 mb-4">
+                  <div class="card shadow-sm">
+                    <p class="card-text p-2 text-muted"><strong>Order Id:</strong>
+                              <%= order.id %>
+                            </p>
+                    <div class="row no-gutters">
+
+                      <% order.products.forEach(product=> {
+                        const quantity = product.orderItem.quantity || 1;
+                        const subtotal = product.price * product.orderItem.quantity;
+                        totalPrice += subtotal;
+                        %>
+                        <div class="col-md-3">
+                          <img src="<%= product.imageUrl || 'https://via.placeholder.com/300x200' %>"
+                            class="img-fluid pb-2 rounded-start h-70" style="object-fit: cover;" alt="<%= product.title %>">
+                        </div>
+                        <div class="col-md-9">
+                          <div class="card-body">
+                            <h5 class="card-title">
+                              <%= product.Title %>
+                            </h5>
+                            
+                            <div class="row align-products-center mt-4">
+                              <div class="col-sm-3">
+                                <strong>Price:</strong> ₹<%= product.price %>
+                              </div>
+                              <div class="col-sm-3">
+                                <strong>Quantity:</strong>
+                                <%= product.orderItem.quantity || 1 %>
+                              </div>
+                              <div class="col-sm-3">
+                                <strong class="text-primary">Subtotal:</strong>
+                                ₹<%= (product.price * (product.orderItem.quantity || 1)).toFixed(2) %>
+                              </div>
+                              <div class="col-sm-3 text-right">
+                                          
+                                <a class="btn btn-danger btn-sm" href="/orders/<%= order.id %>" >Get Invoice</a>
+                                                                                      
+                                  </div> 
+                            </div>
+                          </div>
+                        </div>
+                        <% }) %>
+                    </div>
+                  </div>
+                  <div class="text-right mt-4">
+              <h3>Total: ₹<%=totalPrice.toFixed(2) %>
+              </h3>
+              <form action="/create-order" method="post">
+                <button type="submit" class="btn btn-primary btn-lg">Proceed to checkout</button>
+                <!-- for csfr security token -->
+                <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+              </form>
+            </div>
+                </div>
+                <% }) %>
+            </div>
+
+            //<div class="text-right mt-4">
+              //<h3>Total: ₹<%=totalPrice.toFixed(2) %>
+              //</h3>
+              //<form action="/create-order" method="post">
+                //<button type="submit" class="btn btn-primary btn-lg">Proceed to checkout</button>
+                /*for csfr security token*/
+               // <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+              //</form>
+            //</div>
+            <% } else { %>
+              <div class="text-center py-5">
+                <h2 class="text-muted">Your cart is empty</h2>
+                <p class="lead">Start adding some products!</p>
+                <a href="/cart/checkout" class="btn btn-primary btn-lg">Proceed to checkout</a>
+              </div>
+              <% } %>
+      </div>
+    </main>
+
+    <%- include('../includes/B-layout.ejs') %>
+</body>
+
+</html>

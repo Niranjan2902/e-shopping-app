@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <%- include("../includes/U-layout.ejs") %>
+
+    <main>
+        <section id="hero" class="d-flex align-items-center">
+            <div class="Loginbox">
+                <div class="d-flex align-items-center d-grid" style="grid-template-columns: 1fr 1fr;">
+                    <% if(prods.length > 0) { %>
+                        <% for (let products of prods) { %>
+                            <div class="card m-2" style="width: 18rem">
+                                <img src="<%= products.imageUrl %>" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <%= products.Title %>
+                                    </h5>
+                                    <p><%= products.price %></p>
+                                    <p class="card-text"><%= products.description %></p>
+                                    <% if (isAuthenticated) { %>
+                                        <form action="/cart" method="post" class="mb-3">
+                                            <a href="/products/<%= products.id %>" class="btn btn-primary m-1">Details</a>
+                                            <button type="submit" class="btn btn-primary m-1">Add to Cart</button>
+                                            <input type="hidden" name="productId" value="<%= products.id %>">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        </form>
+                                    <% } else { %>
+                                        <a href="/products/<%= products.id %>" class="btn btn-primary btn-lg btn-block">Details</a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <div class="container text-center text-black">
+                            <h1>No Products Found!</h1>
+                            <p>Add products to the list now!</p>
+                            <a href="/admin/details" class="btn btn-primary btn-lg mt-3">Click here to add products</a>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Static Pagination Section -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <% if(currentPage!==1 && hasPreviousPage !==1) {%>
+                            <li class="page-item"><a class="page-link border border-gray-300 px-3 py-2 hover:bg-red-700 hover:text-white" href="?page=1">1</a></li>
+                            <% } %>
+                            <% if(hasPreviousPage) {%>
+                        <li class="page-item"><a class="page-link border border-gray-300 px-3 py-2 hover:bg-red-700 hover:text-white" href="?page=<%= PreviousPage %>"><%= PreviousPage %></a></li>
+                        <% } %>
+                        <li class="page-item"><a class="page-link border border-gray-300 px-3 py-2 hover:bg-red-700 hover:text-white" href="?page=<%= currentPage %>"><%= currentPage %></a></li>
+                        
+                        <% if(hasNextPage) {%>
+                        <li class="page-item"><a class="page-link border border-gray-300 px-3 py-2 hover:bg-red-700 hover:text-white" href="?page=<%= nextPage %>"><%= nextPage %></a></li>
+                        <% } %>
+                       
+                        <% if(lastPage !== currentPage && nextPage !== lastPage) {%>
+                        <li class="page-item"><a class="page-link border border-gray-300 px-3 py-2" href="?page=<%= lastPage %>"><%= lastPage %></a></li>
+                        <% } %>
+                    </ul>
+                </nav>
+
+            </div>
+        </section>
+
+        <%- include("../includes/B-layout.ejs") %>
+    </main>
+</body>
+
+</html>

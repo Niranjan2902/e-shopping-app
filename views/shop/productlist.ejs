@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css"> <!-- or main.css -->
+</head>
+
+<body>
+    <%- include('../includes/U-layout.ejs') %>
+
+        <main class="py-5">
+            <div class="container">
+                <h1 class="text-center mb-5">
+                    <%= title %>
+                </h1>
+
+                <% if (prods.length> 0) { %>
+                    <div class="row">
+                        <% for(let products of prods){ %>
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                                <div class="card h-100 shadow border-0">
+                                    <img src="<%= products.imageUrl %>" class="card-img-top" alt="<%= products.Title %>"
+                                        style="height: 200px; object-fit: cover;">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">
+                                            <%= products.Title %>
+                                        </h5>
+                                        <p class="card-text text-muted flex-grow-1">
+                                            <%= products.description %>
+                                        </p>
+                                        <p class="h4 text-primary mt-auto">$<%= products.price %>
+                                        </p>
+                                        <% if (isAuthenticated) {%>
+                                            <form action="/cart" method="post" class="w-100">
+                                                <a href="/products/<%= products.id %>"
+                                                    class="btn btn-primary m-1">Details</a>
+                                                <button type="submit" class="btn btn-primary m-1">Add to Cart</button>
+                                                <input type="hidden" name="productId" value="<%= products.id%>">
+
+                                                 <!-- for csfr security token -->
+                                          <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+                                            </form>
+                                            <% } else{ %>
+                                                  <a href="/products/<%= products.id %>"class="btn btn-primary m-1">Details</a>
+                                         <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                    </div>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <h2 class="text-muted">No Products Found!</h2>
+                            <p class="lead">Start adding some products to the shop.</p>
+                            <a href="/admin/details" class="btn btn-primary btn-lg">Add Product</a>
+                        </div>
+                        <% } %>
+            </div>
+        </main>
+
+        <%- include('../includes/B-layout.ejs') %>
+</body>
+
+</html>

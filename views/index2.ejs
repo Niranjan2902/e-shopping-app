@@ -1,0 +1,53 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<%- include("./includes/U-layout.ejs") %>
+
+    <main>
+        <section id="hero" class="d-flex align-items-center">
+            <div class="Loginbox">
+
+                <div class="d-flex align-items-center d-grid",style="grid-template-columns: 1fr 1fr;">
+                    <% if(prods.length>0) { %>
+                        <% for(let products of prods){ %>
+                            <div class="card m-2" style="width: 18rem">
+                                <img src="..." class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <%= products.Title %>
+                                    </h5>
+                                    <p>$20.59</p>
+                                    <p class="card-text"><%= products.description %></p>
+                                    <a href="#" class="btn btn-primary">Add to Cart</a>
+                                </div>
+                            </div>
+                            <% } %>
+                        <% } else { %>
+                            <div class="container text-center text-black">
+                                <h1>No Products Found!</h1>
+                                <p>Add products to the list now!</p>
+                                <a href="/admin/details" class="btn btn-primary btn-lg mt-3">click here to add
+                                    products</a>
+                            </div>
+                        <% } %>
+                </div>
+            </div>
+        </section>
+
+<%- include("./includes/B-layout.ejs") %>
+
+    </main>
+</body>
+
+</html> -->

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="csrf-token" content="<%= csrfToken %>"> <!-- CSRF token here -->
+  <title>Checkout</title>
+
+  <link
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+  <%- include('../includes/U-layout.ejs') %>
+
+  <main class="flex-fill py-5 bg-light">
+    <div class="container">
+      <h1 class="text-center mb-5">Checkout</h1>
+      <div class="row justify-content-center">
+        <ul class="cart__item-list">
+                <% products.forEach(p => { %>
+                    <li class="cart__item">
+                        <h1><%= p.Title %></h1>
+                        <h2>Quantity: <%= p.cartItem.quantity  %></h2>
+                    </li>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+                <% }) %>
+            </ul>
+            <div class="centered">
+                <h2>Total: ₹<%= totalSum %></h2> <!-- Total in INR -->
+            </div>
+        <!-- Checkout Card -->
+        <div class="col-lg-8">
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+
+              <!-- Section: Customer Info -->
+              <h5 class="mb-4">Customer Information</h5>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label>Full Name</label>
+                  <input type="text" class="form-control" placeholder="John Doe">
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Email Address</label>
+                  <input type="email" class="form-control" placeholder="john@email.com">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" class="form-control" placeholder="+1 234 567 890">
+              </div>
+
+              <hr class="my-4">
+
+              <!-- Section: Shipping -->
+              <h5 class="mb-4">Shipping Address</h5>
+              <div class="form-group">
+                <label>Street Address</label>
+                <input type="text" class="form-control" placeholder="123 Main Street">
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  <label>City</label>
+                  <input type="text" class="form-control">
+                </div>
+                <div class="form-group col-md-4">
+                  <label>State</label>
+                  <input type="text" class="form-control">
+                </div>
+                <div class="form-group col-md-4">
+                  <label>Zip Code</label>
+                  <input type="text" class="form-control">
+                </div>
+              </div>
+
+              <hr class="my-4">
+
+              <!-- Section: Payment -->
+              <!-- <h5 class="mb-4">Payment Method</h5>
+              <div class="custom-control custom-radio mb-2">
+                <input type="radio" id="pay1" name="payment" class="custom-control-input" checked>
+                <label class="custom-control-label" for="pay1">Cash on Delivery</label>
+              </div>
+              <div class="custom-control custom-radio mb-2">
+                <input type="radio" id="pay2" name="payment" class="custom-control-input">
+                <label class="custom-control-label" for="pay2">Credit / Debit Card (Coming Soon)</label>
+              </div>
+              <div class="custom-control custom-radio mb-4">
+                <input type="radio" id="pay3" name="payment" class="custom-control-input">
+                <label class="custom-control-label" for="pay3">UPI / Wallet (Coming Soon)</label>
+              </div> -->
+
+              <button class="btn btn-success btn-lg btn-block" id="pay-now-btn">Place Order</button>
+              <p class="text-muted text-center small mt-3 mb-0">This is a demo checkout page. Payment is not functional.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('../includes/B-layout.ejs') %>
+
+</body>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  console.log("Script loaded!");
+
+  document.getElementById('pay-now-btn').addEventListener('click', function() {
+    console.log("Sending request to backend to create Razorpay order...");
+
+    fetch('/create-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'csrf-token': "<%= csrfToken%>"
+      },
+      body: JSON.stringify({
+        totalAmount: `<%= totalSum * 100 %>`
+      })
+    })
+    .then(response => {
+      console.log("Response received from backend:", response);
+      return response.json();
+    })
+    .then(orderData => {
+      console.log("Received order data from backend:", orderData);
+
+      var options = {
+        key: process.env.RAZOR_PAY_TEST_ID , // Replace with your Razorpay key
+        amount: `<%= totalSum * 100 %>`, 
+        currency: "INR", 
+        name: "My Shop",
+        description: "Test Transaction",
+        order_id: orderData.id,
+        handler: function(response) {
+          console.log("Payment successful, payment details:", response);
+          alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+          window.location.href = "/checkout/success"; 
+        },
+        prefill: {
+          name: "Customer Name",
+          email: "customer@example.com",
+          contact: "9999999999"
+        },
+        theme: {
+          color: "#F37254"
+        },
+        payment_options: {
+          upi: true,  // This enables UPI option
+        }
+      };
+      var rzp1 = new Razorpay(options);
+      rzp1.open();
+    })
+    .catch(error => {
+      console.error("Error creating Razorpay order:", error);
+    });
+  });
+</script>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Mild Background to match your previous style */
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* The Main Animated Card */
+        .auth-card {
+            border: none;
+            border-radius: 20px;
+            background: #ffffff;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            margin-top: 50px;
+        }
+
+        /* Hover Animation */
+        .auth-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Improved Clear Toggle Switch */
+        .toggle-container {
+            background: #e9ecef;
+            border-radius: 50px;
+            display: flex;
+            padding: 5px;
+            position: relative;
+            width: 280px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .toggle-container .nav-link {
+            flex: 1;
+            z-index: 2;
+            text-align: center;
+            border: none !important;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 10px 0;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-container .nav-link.active {
+            color: #fff !important;
+            background: transparent !important;
+        }
+
+        /* The sliding color indicator */
+        .toggle-indicator {
+            position: absolute;
+            height: calc(100% - 10px);
+            width: calc(50% - 5px);
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border-radius: 50px;
+            top: 5px;
+            left: 5px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Move indicator when Sign Up is active */
+        #pills-signup-tab.active~.toggle-indicator {
+            left: calc(50%);
+        }
+
+        /* Form Controls */
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 2px solid #f1f1f1;
+            background: #fdfdfd;
+            transition: 0.3s;
+        }
+
+        .invalid {
+            border-color: #ff0000;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+            background: #fff;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+            background: #fff;
+        }
+
+        .btn-auth {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            margin-top: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+            transition: 0.3s;
+        }
+
+        .btn-auth:hover {
+            transform: scale(1.01);
+            filter: brightness(1.1);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-auth2 {
+            background: #ff7979;
+            color: rgb(99, 1, 1);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+        }
+
+        .error-message {
+            padding: 10px 5px;
+            background-color: #ff7979;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 1;
+            z-index: 9999;
+            transition: opacity 1s ease-out;
+            visibility: visible;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../includes/U-layout.ejs') %>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8">
+                <% if ((typeof errMessege === 'string' && errMessege.trim() !== '') || (Array.isArray(errMessege) &&
+                errMessege.length > 0)) { %>
+                    <div id="error-message" class="error-message">
+                        <%= Array.isArray(errMessege) ? errMessege.join('<br>') : errMessege %>
+                    </div>
+                <% } %>
+
+                <div class="card auth-card p-4">
+                    <div class="toggle-container nav nav-pills" id="pills-tab" role="tablist">
+                        <a class="nav-link <%= activeTab === 'login' ? 'active' : '' %>" id="pills-login-tab" data-toggle="pill" href="#pills-login" role="tab">Login</a>
+                        <a class="nav-link <%= activeTab === 'signup' ? 'active' : '' %>" id="pills-signup-tab" data-toggle="pill" href="#pills-signup" role="tab">Sign Up</a>
+                        <div class="toggle-indicator"></div>
+                    </div>
+
+                    <div class="card-body p-2">
+                        <div class="tab-content" id="pills-tabContent">
+                            <!-- Login Form -->
+                            <div class="tab-pane fade <%= activeTab === 'login' ? 'show active' : '' %>" id="pills-login" role="tabpanel">
+                                <form action="/login" method="POST">
+                                    <div class="form-group mb-4">
+                                        <label class="small font-weight-bold text-secondary">Email Address</label>
+                                        <input type="email" name="email" class="form-control <%= ValidationErrors.find(e => e.path === 'email') ? 'invalid' : '' %>" placeholder="name@example.com" value="<%= oldInput.email %>" required>
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label class="small font-weight-bold text-secondary">Password</label>
+                                        <input type="password" name="password" class="form-control <%= ValidationErrors.find(e => e.path === 'password') ? 'invalid' : '' %>" placeholder="••••••••" value="<%= oldInput.password %>" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-auth">Sign In</button>
+                                    <div class="text-center mt-3">
+                                        <a href="/reset-password" class="small text-primary">Forgot your password?</a>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Sign Up Form -->
+                            <div class="tab-pane fade <%= activeTab === 'signup' ? 'show active' : '' %>" id="pills-signup" role="tabpanel">
+                                <form action="/signup" method="POST">
+                                    <div class="form-group mb-3">
+                                        <label class="small font-weight-bold text-secondary">Full Name</label>
+                                        <input type="text" name="username" class="form-control <%= ValidationErrors.find(e => e.path === 'username') ? 'invalid' : '' %>" placeholder="John Doe" value="<%= oldInput.username %>" required>
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="small font-weight-bold text-secondary">Email Address</label>
+                                        <input type="email" name="email" class="form-control <%= ValidationErrors.find(e => e.path === 'email') ? 'invalid' : '' %>" placeholder="name@example.com" value="<%= oldInput.email %>" required>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="small font-weight-bold text-secondary">Password</label>
+                                        <input type="password" name="password" class="form-control <%= ValidationErrors.find(e => e.path === 'password') ? 'invalid' : '' %>" placeholder="Min. 8 characters" value="<%= oldInput.password %>" required>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="small font-weight-bold text-secondary">Confirm Password</label>
+                                        <input type="password" name="confirmpassword" class="form-control <%= ValidationErrors.find(e => e.path === 'confirmpassword') ? 'invalid' : '' %>" placeholder="Min. 8 characters" value="<%= oldInput.confirmpassword %>" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-auth">Create Free Account</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../includes/B-layout.ejs') %>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Fade out the error message after 5 seconds
+        setTimeout(function () {
+            const errorMessage = document.getElementById('error-message');
+            if (errorMessage) {
+                errorMessage.style.opacity = '0';
+                setTimeout(function () {
+                    errorMessage.style.visibility = 'hidden';
+                }, 1000); // Wait for the fade out transition to finish
+            }
+        }, 4000); // Show the error message for 5 seconds
+    </script>
+</body>
+
+</html>
