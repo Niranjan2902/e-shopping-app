@@ -6,7 +6,7 @@
 //     host:'localhost',
 //     user:'root',
 //     database:'eshop_app',
-//     password:'Nir@sql731'
+//     password:process.env.DB_PASSWORD
 // })
 
 // module.exports=pool.promise();
