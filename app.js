@@ -29,7 +29,6 @@ const multer=require('multer')
 //VIEWS
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
-//app.use(session({secret:'AdminSecret#123',resave:false,saveUninitialized:false}))
 
 // initalize sequelize with session store
 const session=require('express-session');
@@ -76,7 +75,7 @@ const certificate=fs.readFileSync('server.cert')
 // configure express
 app.use(
   session({
-    secret: "Eshop#123",
+    secret: process.env.SESSION_SECRET,
     store: new SequelizeStore({
       db: sequelize,
     }),
@@ -149,7 +148,6 @@ app.use((req, res, next) => {
 });
 
 app.get((error,req,res,next)=>{
-  // res.status(error.httpStatusCode).render(...); THIS CODE CAN BE USED WHILE DEALING WITH JSON
    res.status(500).render('500_err');
 })
 
@@ -182,24 +180,6 @@ Order.belongsToMany(Product, { through: OrderItem });
 
 //sequelize.sync({force:true})
 sequelize.sync()
-    // .then(result => {
-    //     return User.findByPk(1); // Find user with ID 1
-    // })
-    // .then(user => {
-    //     if (!user) {
-    //         return User.create({ name: 'Max', email: 'test@test.com' }); // Create user if not exists
-    //     }
-    //     return user;
-    // })
-    // .then(user => {
-    //     // Check if the cart exists, if not, create it
-    //     return user.getCart().then(cart => {
-    //         if (!cart) {
-    //             return user.createCart(); // Create a new cart if not exists
-    //         }
-    //         return cart; // Return existing cart
-    //     });
-    // })
     .then(cart => {
         // Now the cart is either existing or newly created
         app.listen(3000);
